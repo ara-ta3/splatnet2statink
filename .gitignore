@@ -1,2 +1,9 @@
 config.txt
 *.pyc
+
+# for virtualenv
+
+.Python
+bin
+lib
+include
