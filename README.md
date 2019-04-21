@@ -3,7 +3,7 @@ splatnet2statink
 
 splatnet2statink is a script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Online") to [stat.ink](https://stat.ink/), a site for recording, visualizing, and aggregating statistics from *Splatoon* and *Splatoon 2*.
 
-(ja) 日本語版セットアップ手順は[こちら](https://archive.fo/td52p)。
+(ja) 日本語版セットアップ手順は[こちら](https://vanillasalt.net/2019/03/06/how-to-use-splatnet2statink/)。
 
 (zh) 中文版的安装说明在[这里](https://cowlevel.net/article/1927016)。
 
@@ -21,60 +21,58 @@ The `-s` flag blacks out other players' names on the scoreboard result image and
 
 The `-t` flag sends battle data to stat.ink as a dry run, without uploading, for testing/validation purposes.
 
-The `--salmon` flag updates your Salmon Run profile and allows you to upload shifts (jobs) worked.
+The `--salmon` flag updates your Salmon Run profile and allows you to upload jobs (shifts) worked.
 
-Note: Executing the script via `./splatnet2statink.py` is also possible on macOS or Linux. If you've downloaded a .zip of this repository using the green "Clone or download" button above (instead of via `git clone`), the script must first be made executable by running `chmod +x splatnet2statink.py`.
+Note: You can also execute the script via `./splatnet2statink.py` on macOS and Linux. On Windows, use a backslash.
 
 ### Example usage
 
 Running `python splatnet2statink.py -M 900` from the command line launches the script in monitoring mode, checking for and uploading battles every 15 minutes.
 
-Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run shifts not already present on stat.ink.
+Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run jobs not already present on stat.ink.
 
 ## Features
 
+- [x] ~~Full automation of SplatNet cookie generation/acquisition via user log-in~~ ([more info](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions))
 - [x] Complete battle stats
-  - [x] Lobby/mode, stage, weapon – including new Ver. 4.0 weapons
+  - [x] Lobby/mode, stage, weapon (including new Ver. 4.0+ weapons)
   - [x] Result, final count/percent, turf inked
   - [x] Kills, deaths, assists, specials
   - [x] Rank, level & star emblems (&#9733;), X Rank & Power
   - [x] Battle start & end times
   - [x] Ranked power level & League Power
-  - [x] Splatfest title, EXP & Power
+  - [x] Splatfest support: Title, EXP, Power, Clout, Synergy Bonus, team nickname, win streak
   - [x] Species (Inkling or Octoling)
-- [x] Gear/ability recognition, gear & user profile image upload – including Ver. 3.0 & Octo Expansion gear
+- [x] Gear/ability recognition, gear & user profile image upload (including new Ver. 3.0+ & Octo Expansion gear)
 - [x] Monitoring for new battle results in real-time
 - [x] Scoreboard stats, player ranking & battle result image upload
-- [x] Salmon Run support – upload shift details & stats along with your Grizzco Point Card
+- [x] Salmon Run support – upload job details & stats along with your Grizzco Point Card
 - [x] Full support for all available game languages
-- [x] ~~Full automation of SplatNet cookie generation/acquisition via user log-in~~ ([more info](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions))
 
 
 ## Setup instructions
 
-1. Download and install [Python](https://www.python.org/downloads/). The script supports both Python 3.x and 2.7.x.
+*These instructions are meant to be accesssible and easy-to-follow for all users, and is the recommended way to run the script. However, an alternative [simple version](https://github.com/frozenpandaman/splatnet2statink/wiki/simple-setup-instructions) is also available.*
 
-    If you're on macOS, Python 2.7 comes pre-installed. However, we recommend installing an updated version via [Homebrew](https://brew.sh/). Install Homebrew by running the command listed on the website, and then run `brew install python`.
+1. Download and install Python. On Windows, download the installer from the [official website](https://www.python.org/downloads/) and check the option during setup to add it to your PATH. On macOS, install [Homebrew](https://brew.sh/) and then run `brew install python`.
 
-2. Download the script from the command line (macOS: Terminal; Windows: Command Prompt/PowerShell) by running `git clone https://github.com/frozenpandaman/splatnet2statink.git` (requires [Git](https://git-scm.com/download), pre-installed on macOS), or use the green "Clone or download" button above.
+2. If you're on Windows, install [Git](https://git-scm.com/download) (pre-installed on macOS).
 
-3. Navigate to the newly-created directory (`cd splatnet2statink/`) and install the required Python libraries by running `pip install -r requirements.txt`.
+3. Download the script from the command line (macOS: Terminal; Windows: Command Prompt/PowerShell) by running `git clone https://github.com/frozenpandaman/splatnet2statink.git`.
 
-    Note: Python 3.4+ and 2.7.9+, along with all Homebrew versions, automatically include pip. If you're on a lower version (check via `python --version`) or the above command doesn't work, install it from the [website](https://pip.pypa.io/en/stable/installing/), or by running `sudo easy_install pip` on macOS.
+4. Navigate to the newly-created directory (`cd splatnet2statink/`) and install the required Python libraries by running `pip install -r requirements.txt`. On Windows, you may have to use `python -m pip` instead.
 
-4. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
+5. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
 
-~~**READ THE ENTIRETY OF THE "COOKIE GENERATION" SECTION BELOW BEFORE PROCEEDING. [→](#cookie-generation-important)**~~
+~~**NOTE: Read the "Cookie generation" section below before proceeding. [→](#cookie-generation)**~~
 
-5. ~~You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`; this will be used to generate an `iksm_session` cookie. If you are opting against automatic cookie generation, enter "skip" for this step, at which point you will be asked for your `iksm_session` cookie instead (see the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions)).~~
-
-    ---
-
-    **UPDATE:** The authentication process has changed in the 1.4.1 update to the Nintendo Switch Online app. Existing, non-expired cookies can still be used to run the script and access the site, but trying to generate a new cookie will now produce the message "Invalid token." We're working on a fix ASAP – please see [this issue](https://github.com/frozenpandaman/splatnet2statink/issues/62) for more information. For now, follow the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions) to manually obtain your cookie.
+6. ~~You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`; this will be used to generate an `iksm_session` cookie. If you are opting against automatic cookie generation, enter "skip" for this step, at which point you will be asked to manually input your `iksm_session` cookie instead (see the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions)).~~
 
     ---
 
-    This token (used to access your SplatNet battle results), along with your stat.ink API key and language, will automatically be saved into `config.txt` for you. You're now ready to upload battles!
+    **UPDATE:** The authentication process has changed in the v1.5.0 update to the Nintendo Switch Online app. Existing, non-expired cookies can still be used to run the script and access the site, but trying to generate a new cookie will now produce the message "Invalid token." We're working on a fix ASAP. For now, follow the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions) to manually obtain your cookie.
+
+    This cookie (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or create an [issue](https://github.com/frozenpandaman/splatnet2statink/issues) here.
 
@@ -84,33 +82,33 @@ Have any questions, issues, or suggestions? Feel free to message me on [Twitter]
 
 If you wish to access SplatNet 2 from your computer rather than via the phone app, navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) (it should show a forbidden error). Use a cookie editor – such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome – to change `iksm_session` to the value you obtained previously (automatically or via [mitmproxy](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions), stored as  `cookie` in `config.txt`), and refresh the page. If you only want to access SplatNet and don't have a stat.ink API key, simply enter "skip" for this step during setup.
 
-*Splatoon 2* stage rotation information (including Salmon Run) and current SplatNet gear are viewable at [https://splatoon2.ink/](https://splatoon2.ink/).
+*Splatoon 2* stage rotation information (including Salmon Run) and current SplatNet gear are viewable at [splatoon2.ink](https://splatoon2.ink/).
 
 ---
 
-## ~~Cookie generation (IMPORTANT)~~
-
-***NOTE: This section is currently irrelevant as automatic cookie generation is broken!***
+## Cookie generation
 
 For splatnet2statink to work, a cookie known as `iksm_session` is required to access SplatNet. This cookie may be obtained automatically, using the script, or manually via the app. Please read the following sections carefully to decide whether or not you want to use automatic cookie generation.
 
-### Automatic
+### ~~Automatic~~
 
-Automatic cookie generation involves making a **secure request to a _non-Nintendo server_ with minimal, non-identifying information**. We aim to be 100% transparent about this and provide in-depth information on security and privacy below. Users who feel uncomfortable with this may opt to manually acquire their cookie instead.
+***NOTE: This section is currently irrelevant as automatic cookie generation is broken!***
 
-The v1.1.0 update to the Nintendo Switch Online app, released in September 2017, changed the method used to log in to Nintendo accounts, complicating the ability to generate cookies within the script. The update introduced the requirement of a [message authentication code](https://en.wikipedia.org/wiki/Message_authentication_code), known as `f`, to verify the authenticity of the login request.
+Automatic cookie generation involves making a *secure request to two non-Nintendo servers with minimal, non-identifying information*. We aim to be 100% transparent about this and provide in-depth information on security and privacy below. Users who feel uncomfortable with this may opt to manually acquire their cookie instead.
 
-This code is only able to be generated using a [key](https://en.wikipedia.org/wiki/Key_\(cryptography\)) provided within the app. However, this key is sensitive and, if revealed, may assist users looking to use it for malicious purposes. To prevent sharing this key publicly (e.g. distributing it in the script's source code), I've created a small [API](https://en.wikipedia.org/wiki/Application_programming_interface) which will generate an `f` token given a valid input.
+The v1.1.0 update to the Nintendo Switch Online app, released in September 2017, introduced the requirement of a [message authentication code](https://en.wikipedia.org/wiki/Message_authentication_code) (known as `f`), thereby complicating the ability to generate cookies within the script. After figuring out the [key](https://en.wikipedia.org/wiki/Key_\(cryptography\)) previously used to generate `f` tokens, the calculation method was changed in September 2018's v1.4.1 update, heavily obfuscating the new process. As a workaround, an Android server was set up to emulate the app, specifically to generate `f` tokens.
 
-**_Privacy statement:_ No identifying information is ever sent to the API server. Usernames and passwords are far removed from where the API comes into play and are never readable by anyone but you. Returned `f` tokens  are never logged or stored and do not contain meaningful information. It is not possible to use either sent or stored data to identify which account/user performed a request, to view any identifying information about a user, or to gain access to an account.**
+Generation now requires a [hash value](https://en.wikipedia.org/wiki/Hash_function) to further verify the authenticity of the request. The algorithm to calculate this, originally done within the app, is sensitive; to prevent sharing it publicly (i.e. distributing it in the script's source code), I've created a small [API](https://en.wikipedia.org/wiki/Application_programming_interface) which generates a hash value given a valid input. This can be passed to the Android server to generate the corresponding `f` token, which is then used to retrieve an `iksm_session` cookie.
 
-Please read the **[API documentation wiki page](https://github.com/frozenpandaman/splatnet2statink/wiki/api-docs)** for more information.
+**Privacy statement:** No identifying information is ever sent to the API server. Usernames and passwords are far removed from where the API comes into play and are never readable by anyone but you. Returned hash values are never logged or stored and do not contain meaningful information. It is not possible to use either sent or stored data to identify which account/user performed a request, to view any identifying information about a user, or to gain access to an account.
+
+See the **[API documentation wiki page](https://github.com/frozenpandaman/splatnet2statink/wiki/api-docs)** for more information.
 
 ### Manual
 
 Users who decide against automatic cookie generation via their computer may instead generate/retrieve `iksm_session` cookies from the SplatNet app.
 
-In this case, users must obtain their cookie from their phone by intercepting their device's web traffic and inputting it into splatnet2statink when prompted (or manually inputting it into `config.txt`). Follow the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions) to obtain and configure your cookie manually. To opt to manually acquire your cookie, enter "skip" when prompted to enter the "use this account" URL.
+In this case, users must obtain their cookie from their phone by intercepting their device's web traffic and inputting it into splatnet2statink when prompted (or manually adding it to `config.txt`). Follow the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions) to obtain and configure your cookie manually. To opt to manually acquire your cookie, enter "skip" when prompted to enter the "Select this person" URL.
 
 ## License
 

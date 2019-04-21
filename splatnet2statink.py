@@ -20,22 +20,29 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.3.4"
+A_VERSION = "1.4.3"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
+# place config.txt in same directory as script (bundled or not)
+if getattr(sys, 'frozen', False):
+	app_path = os.path.dirname(sys.executable)
+elif __file__:
+	app_path = os.path.dirname(__file__)
+config_path = os.path.join(app_path, "config.txt")
+
 try:
-	config_file = open("config.txt", "r")
+	config_file = open(config_path, "r")
 	config_data = json.load(config_file)
 	config_file.close()
 except (IOError, ValueError):
 	print("Generating new config file.")
-	config_data = {"api_key": "", "cookie": "", "user_lang": "", "session_token": "skip"}
-	config_file = open("config.txt", "w")
+	config_data = {"api_key": "", "cookie": "", "user_lang": "", "session_token": ""}
+	config_file = open(config_path, "w")
 	config_file.seek(0)
 	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
 	config_file.close()
-	config_file = open("config.txt", "r")
+	config_file = open(config_path, "r")
 	config_data = json.load(config_file)
 	config_file.close()
 
@@ -46,7 +53,7 @@ YOUR_COOKIE   = config_data["cookie"] # iksm_session
 try: # support for pre-v1.0.0 config.txts
 	SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
 except:
-	SESSION_TOKEN = "skip"
+	SESSION_TOKEN = ""
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
 #########################
 
@@ -55,7 +62,7 @@ debug = False # print out payload and exit. can use with geargrabber2.py & savin
 if "app_timezone_offset" in config_data:
 	app_timezone_offset = str(config_data["app_timezone_offset"])
 else:
-	app_timezone_offset = str(int(time.timezone/60))
+	app_timezone_offset = str(int((time.mktime(time.gmtime()) - time.mktime(time.localtime()))/60))
 
 if "app_unique_id" in config_data:
 	app_unique_id = str(config_data["app_unique_id"])
@@ -110,7 +117,7 @@ def gen_new_cookie(reason):
 		print("The stored cookie has expired.")
 	else: # server error or player hasn't battled before
 		print("Cannot access SplatNet 2 without having played at least one battle online.")
-		exit(1)
+		sys.exit(1)
 	if SESSION_TOKEN == "":
 		print("session_token is blank. Please log in to your Nintendo Account to obtain your session_token.")
 		new_token = iksm.log_in(A_VERSION)
@@ -126,26 +133,29 @@ def gen_new_cookie(reason):
 			write_config(config_data)
 	elif SESSION_TOKEN == "skip":
 		manual = True
-		# print("\nYou have opted against automatic cookie generation and must manually input your iksm_session cookie. You may clear this setting by removing \"skip\" from the session_token field in config.txt.\n")
+		print("\nYou have opted against automatic cookie generation and must manually input your iksm_session cookie. You may clear this setting by removing \"skip\" from the session_token field in config.txt.\n")
 
 	if manual:
 		new_cookie = iksm.enter_cookie()
 	else:
 		print("Attempting to generate new cookie...")
-		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG, A_VERSION) # error handling in get_cookie()
+		acc_name, new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG, A_VERSION)
 	config_data["cookie"] = new_cookie
 	write_config(config_data)
-	print("Wrote iksm_session cookie to config.txt.")
+	if manual:
+		print("Wrote iksm_session cookie to config.txt.")
+	else:
+		print("Wrote iksm_session cookie for {} to config.txt.".format(acc_name))
 
 def write_config(tokens):
 	'''Writes config file and updates the global variables.'''
 
-	config_file = open("config.txt", "w")
+	config_file = open(config_path, "w")
 	config_file.seek(0)
 	config_file.write(json.dumps(tokens, indent=4, sort_keys=True, separators=(',', ': ')))
 	config_file.close()
 
-	config_file = open("config.txt", "r")
+	config_file = open(config_path, "r")
 	config_data = json.load(config_file)
 
 	global API_KEY
@@ -209,13 +219,13 @@ def check_for_updates():
 	'''Checks the version of the script against the latest version in the repo and updates dbs.py.'''
 
 	latest_script = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/splatnet2statink.py")
-	new_version = re.search("= \"([\d.]*)\"", latest_script.text).group(1)
+	new_version = re.search(r'= "([\d.]*)"', latest_script.text).group(1)
 	try:
 		update_available = StrictVersion(new_version) != StrictVersion(A_VERSION)
 		if update_available:
-			print("There is a new version available.")
+			print("There is a new version (v{}) available.".format(new_version), end='')
 			if os.path.isdir(".git"): # git user
-				update_now = input("Would you like to update now? [Y/n] ")
+				update_now = input("\nWould you like to update now? [Y/n] ")
 				if update_now == "" or update_now[0].lower() == "y":
 					FNULL = open(os.devnull, "w")
 					call(["git", "checkout", "."], stdout=FNULL, stderr=FNULL)
@@ -224,18 +234,21 @@ def check_for_updates():
 					print("Successfully updated to v{}. Please restart splatnet2statink.".format(new_version))
 					return True
 				else:
-					print("Remember to update later with \"git pull\" to get the latest version.")
+					print("Remember to update later with \"git pull\" to get the latest version.\n")
 			else: # non-git user
-				print("Visit the site below to update:\nhttps://github.com/frozenpandaman/splatnet2statink\n")
+				print(" Visit the site below to update:\nhttps://github.com/frozenpandaman/splatnet2statink\n")
 				# dbs_freshness = time.time() - os.path.getmtime("dbs.py")
-				latest_db = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/dbs.py")
-				try:
-					if latest_db.status_code == 200: # require proper response from github
-						local_db = open("dbs.py", "w")
-						local_db.write(latest_db.text)
-						local_db.close()
-				except: # if we can't open the file
-					pass # then we don't modify the database
+				if getattr(sys, 'frozen', False): # bundled
+					pass
+				else:
+					latest_db = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/dbs.py")
+					try:
+						if latest_db.status_code == 200: # require proper response from github
+							local_db = open("dbs.py", "w")
+							local_db.write(latest_db.text)
+							local_db.close()
+					except: # if we can't open the file
+						pass # then we don't modify the database
 	except: # if there's a problem connecting to github
 		pass # then we assume there's no update available
 
@@ -243,7 +256,7 @@ def main():
 	'''I/O and setup.'''
 
 	if check_for_updates():
-		exit(0)
+		sys.exit(0)
 
 	check_statink_key()
 	set_language()
@@ -273,20 +286,20 @@ def main():
 	salmon_and_more = True if salmon and len(sys.argv) > 3 else False
 	if salmon_and_not_r or salmon_and_more:
 		print("Can only use --salmon flag alone or with -r. Exiting.")
-		exit(1)
+		sys.exit(1)
 
 	if parser_result.N != None:
 		try:
 			m_value = int(parser_result.N)
 		except ValueError:
 			print("Number provided must be an integer. Exiting.")
-			exit(1)
+			sys.exit(1)
 		if m_value < 0:
 				print("No.")
-				exit(1)
+				sys.exit(1)
 		elif m_value < 60:
 				print("Minimum number of seconds in monitoring mode is 60. Exiting.")
-				exit(1)
+				sys.exit(1)
 	else:
 		m_value = -1
 
@@ -305,7 +318,7 @@ def load_results(calledby=""):
 			else:
 				vp = "run"
 			print("Cannot {} given a local file. Exiting.".format(vp))
-			exit(1)
+			sys.exit(1)
 	except NameError: # some other script is probably plugging into s2s and calling load_results() directly
 		pass
 
@@ -325,7 +338,7 @@ def load_results(calledby=""):
 			results = data["results"] # try again with correct tokens; shouldn't get an error now...
 		except: # ...as long as there are actually battles to fetch (i.e. has played online)
 			print("Cannot access SplatNet 2 without having played at least one battle online.")
-			exit(1)
+			sys.exit(1)
 
 	return results
 
@@ -370,7 +383,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	wins, losses, splatfest_wins, splatfest_losses, mirror_matches = [0]*5 # init all to 0
 
 	# main process
-	mins = str(round(old_div(float(secs),60.0),2))
+	mins = str(round(old_div(float(secs), 60.0), 2))
 	if mins[-2:] == ".0":
 		mins = mins[:-2]
 	print("Waiting for new battles... (checking every {} minutes)".format(mins))
@@ -471,7 +484,7 @@ def get_num_battles():
 					data = json.load(data_file)
 				except ValueError:
 					print("Could not decode JSON object in this file.")
-					exit(1)
+					sys.exit(1)
 		else: # no argument
 			data = load_json(True)
 
@@ -484,7 +497,7 @@ def get_num_battles():
 					results = data["results"]
 				except KeyError:
 					print("Ill-formatted JSON file.")
-					exit(1)
+					sys.exit(1)
 			else:
 				if YOUR_COOKIE == "":
 					reason = "blank"
@@ -499,13 +512,13 @@ def get_num_battles():
 			n = int(input("Number of recent battles to upload (0-50)? "))
 		except ValueError:
 			print("Please enter an integer between 0 and 50. Exiting.")
-			exit(1)
+			sys.exit(1)
 		if n < 1:
 			print("Exiting without uploading anything.")
-			exit(0)
+			sys.exit(0)
 		elif n > 50:
 			print("SplatNet 2 only stores the 50 most recent battles. Exiting.")
-			exit(1)
+			sys.exit(1)
 		else:
 			return n, results
 
@@ -1188,7 +1201,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 
 		if payload["agent"] != os.path.basename(__file__)[:-3]:
 			print("Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance.")
-			exit(1)
+			sys.exit(1)
 		postbattle = requests.post(url, headers=auth, data=msgpack.packb(payload), allow_redirects=False)
 
 		# Response
@@ -1215,7 +1228,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 				cont = input('Continue? [Y/n] ')
 				if cont[0].lower() == "n":
 					print("Exiting.")
-					exit(1)
+					sys.exit(1)
 
 def blackout(image_result_content, players):
 	'''Given a scoreboard image as bytes and players array, returns the blacked-out scoreboard.'''
