@@ -9,3 +9,6 @@ install:
 run: opt = 
 run:
 	. bin/activate && python splatnet2statink.py $(opt)
+
+run/salmon:
+	$(MAKE) run opt='--salmon -r'
