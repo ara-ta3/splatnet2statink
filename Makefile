@@ -12,3 +12,6 @@ run:
 
 run/salmon:
 	$(MAKE) run opt='--salmon -r'
+
+config/%:
+	cp -f config.txt.$* config.txt
