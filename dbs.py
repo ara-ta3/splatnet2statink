@@ -153,56 +153,104 @@ weapons = {
 # Stage database
 # https://app.splatoon2.nintendo.net/api/data/stages (needs auth)
 stages = {
-	0:    'battera',   # The Reef
-	1:    'fujitsubo', # Musselforge Fitness
-	2:    'gangaze',   # Starfish Mainstage
-	3:    'chozame',   # Sturgeon Shipyard
-	4:    'ama',       # Inkblot Art Academy
-	5:    'kombu',     # Humpback Pump Track
-	6:    'manta',     # Manta Maria
-	7:    'hokke',     # Port Mackerel
-	8:    'tachiuo',   # Moray Towers
-	9:    'engawa',    # Snapper Canal
-	10:   'mozuku',    # Kelp Dome
-	11:   'bbass',     # Blackbelly Skatepark
-	12:   'devon',     # Shellendorf Institute
-	13:   'zatou',     # MakoMart
-	14:   'hakofugu',  # Walleye Warehouse
-	15:   'arowana',   # Arowana Mall
-	16:   'mongara',   # Camp Triggerfish
-	17:   'shottsuru', # Piranha Pit
-	18:   'ajifry',    # Goby Arena
-	19:   'otoro',     # New Albacore Hotel
-	20:   'sumeshi',   # Wahoo World
-	21:   'anchovy',   # Ancho-V Games
-	22:   'mutsugoro', # Skipper Pavilion
-	9999: 'mystery',   # Shifty Station (Splatfest only)
+	0:    'battera',    # The Reef
+	1:    'fujitsubo',  # Musselforge Fitness
+	2:    'gangaze',    # Starfish Mainstage
+	3:    'chozame',    # Sturgeon Shipyard
+	4:    'ama',        # Inkblot Art Academy
+	5:    'kombu',      # Humpback Pump Track
+	6:    'manta',      # Manta Maria
+	7:    'hokke',      # Port Mackerel
+	8:    'tachiuo',    # Moray Towers
+	9:    'engawa',     # Snapper Canal
+	10:   'mozuku',     # Kelp Dome
+	11:   'bbass',      # Blackbelly Skatepark
+	12:   'devon',      # Shellendorf Institute
+	13:   'zatou',      # MakoMart
+	14:   'hakofugu',   # Walleye Warehouse
+	15:   'arowana',    # Arowana Mall
+	16:   'mongara',    # Camp Triggerfish
+	17:   'shottsuru',  # Piranha Pit
+	18:   'ajifry',     # Goby Arena
+	19:   'otoro',      # New Albacore Hotel
+	20:   'sumeshi',    # Wahoo World
+	21:   'anchovy',    # Ancho-V Games
+	22:   'mutsugoro',  # Skipper Pavilion
+	100:  'mystery_04', # Shifty: Windmill House on the Pearlie
+	101:  'mystery_01', # Shifty: Wayslide Cool
+	102:  'mystery_02', # Shifty: The Secret of S.P.L.A.T.
+	103:  'mystery_03', # Shifty: Goosponge
+	105:  'mystery_07', # Shifty: Cannon Fire Pearl
+	106:  'mystery_06', # Shifty: Zone of Glass
+	107:  'mystery_05', # Shifty: Fancy Spew
+	108:  'mystery_09', # Shifty: Grapplink Girl
+	109:  'mystery_10', # Shifty: Zappy Longshocking
+	110:  'mystery_08', # Shifty: The Bunker Games
+	111:  'mystery_11', # Shifty: A Swiftly Tilting Balance
+	112:  'mystery_13', # Shifty: The Switches
+	113:  'mystery_12', # Shifty: Sweet Valley Tentacles
+	114:  'mystery_14', # Shifty: The Bouncey Twins
+	115:  'mystery_15', # Shifty: Railway Chillin'
+	116:  'mystery_16', # Shifty: Gusher Towns
+	117:  'mystery_17', # Shifty: The Maze Dasher
+	118:  'mystery_18', # Shifty: Flooders in the Attic
+	119:  'mystery_19', # Shifty: The Splat in Our Zones
+	120:  'mystery_20', # Shifty: The Ink is Spreading
+	121:  'mystery_21', # Shifty: Bridge to Tentaswitchia
+	122:  'mystery_22', # Shifty: The Chronicles of Rolonium
+	123:  'mystery_23', # Shifty: Furler in the Ashes
+	124 : 'mystery_24', # Shifty: MC.Princess Diaries
+	9999: 'mystery',    # Shifty Station
 
 	# clearly the funniest way to go about doing this
-	'battera':   'Reef',
-	'fujitsubo': 'Fitness',
-	'gangaze':   'Mainstage',
-	'chozame':   'Shipyard',
-	'ama':       'Academy',
-	'kombu':     'Track',
-	'manta':     'Manta',
-	'hokke':     'Port',
-	'tachiuo':   'Towers',
-	'engawa':    'Canal',
-	'mozuku':    'Dome',
-	'bbass':     'Skatepark',
-	'devon':     'Institute',
-	'zatou':     'Mart',
-	'hakofugu':  'Warehouse',
-	'arowana':   'Mall',
-	'mongara':   'Camp',
-	'shottsuru': 'Pit',
-	'ajifry':    'Arena',
-	'otoro':     'Hotel',
-	'sumeshi':   'World',
-	'anchovy':   'Games',
-	'mutsugoro': 'Pavilion',
-	'mystery':   'Shifty'
+	'battera':    'Reef',
+	'fujitsubo':  'Fitness',
+	'gangaze':    'Mainstage',
+	'chozame':    'Shipyard',
+	'ama':        'Academy',
+	'kombu':      'Track',
+	'manta':      'Manta',
+	'hokke':      'Port',
+	'tachiuo':    'Towers',
+	'engawa':     'Canal',
+	'mozuku':     'Dome',
+	'bbass':      'Skatepark',
+	'devon':      'Institute',
+	'zatou':      'Mart',
+	'hakofugu':   'Warehouse',
+	'arowana':    'Mall',
+	'mongara':    'Camp',
+	'shottsuru':  'Pit',
+	'ajifry':     'Arena',
+	'otoro':      'Hotel',
+	'sumeshi':    'World',
+	'anchovy':    'Games',
+	'mutsugoro':  'Pavilion',
+	'mystery':    'Shifty',
+	'mystery_01': 'Shifty: Wayslide',
+	'mystery_02': 'Shifty: S.P.L.A.T.',
+	'mystery_03': 'Shifty: Goosponge',
+	'mystery_04': 'Shifty: Windmill',
+	'mystery_05': 'Shifty: Spew',
+	'mystery_06': 'Shifty: Glass',
+	'mystery_07': 'Shifty: Cannon',
+	'mystery_08': 'Shifty: Bunker',
+	'mystery_09': 'Shifty: Grapplink',
+	'mystery_10': 'Shifty: Longshocking',
+	'mystery_11': 'Shifty: Balance',
+	'mystery_12': 'Shifty: Tentacles',
+	'mystery_13': 'Shifty: Switches',
+	'mystery_14': 'Shifty: Bouncey',
+	'mystery_15': 'Shifty: Railway',
+	'mystery_16': 'Shifty: Gusher',
+	'mystery_17': 'Shifty: Dasher',
+	'mystery_18': 'Shifty: Flooders',
+	'mystery_19': 'Shifty: Zones',
+	'mystery_20': 'Shifty: Spreading',
+	'mystery_21': 'Shifty: Tentaswitchia',
+	'mystery_22': 'Shifty: Rolonium',
+	'mystery_23': 'Shifty: Furler',
+	'mystery_24': 'Shifty: Diaries'
 }
 
 # Gear database
@@ -333,6 +381,7 @@ headgears = {
 	21005: 'cap_of_legend',
 	21006: 'oceanic_hard_hat',
 	21007: 'workers_head_towel',
+	21008: 'workers_cap',
 	21009: 'sailor_cap',
 	22000: 'mecha_head_htr',
 	24000: 'kyonshi_hat',
@@ -347,6 +396,10 @@ headgears = {
 	24009: 'green_novelty_visor',
 	24010: 'orange_novelty_visor',
 	24011: 'pink_novelty_visor',
+	24012: 'jetflame_crest',
+	24013: 'fierce_fishskull',
+	24014: 'hivemind_antenna',
+	24015: 'eye_of_justice',
 	25000: 'squid_hairclip',
 	25001: 'samurai_helmet',
 	25002: 'power_mask',
@@ -603,7 +656,9 @@ clothes = {
 	21007: 'record_shop_look_ep',
 	21008: 'dev_uniform',
 	21009: 'office_attire',
+	21010: 'srl_coat',
 	22000: 'mecha_body_akm',
+	23000: 'splatfest_tee_replica',
 	25000: 'school_uniform',
 	25001: 'samurai_jacket',
 	25002: 'power_armor',
@@ -760,6 +815,7 @@ shoes = {
 	21001: 'angry_rain_boots',
 	21002: 'non_slip_senseis',
 	21003: 'octoleet_boots',
+	21004: 'friendship_bracelet',
 	21005: 'flipper_floppers',
 	21006: 'wooden_sandals',
 	22000: 'mecha_legs_lbs',

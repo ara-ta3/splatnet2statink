@@ -3,6 +3,7 @@
 
 # eli fessler
 # clovervidia
+from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from builtins import input
@@ -20,7 +21,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.5.0"
+A_VERSION = "1.5.3"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -356,7 +357,11 @@ def populate_battles(s_flag, t_flag, r_flag, debug):
 		url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=100'
 		auth = {'Authorization': 'Bearer {}'.format(API_KEY)}
 		resp = requests.get(url, headers=auth)
-		statink_battles = json.loads(resp.text) # 100 recent battles on stat.ink. should avoid dupes
+		try:
+			statink_battles = json.loads(resp.text) # 100 recent battles on stat.ink. should avoid dupes
+		except:
+			print("Encountered an error while checking recently-uploaded battles. Is stat.ink down?")
+			sys.exit(1)
 
 	# always does this to populate battles array, regardless of r_flag
 	for i, result in reversed(list(enumerate(results))):
@@ -768,11 +773,14 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	agent_variables = {'upload_mode': "Monitoring" if ismonitor else "Manual"}
 	payload["agent_variables"] = agent_variables
 	bn = results[i]["battle_number"]
-	ver4 = True if "version" in results[i] and results[i]["version"] == 4 else False
+	ver4 = True if "version" in results[i] and results[i]["version"] >= 4 else False # splatfest only
 	principal_id = results[i]["player_result"]["player"]["principal_id"]
 	namespace = uuid.UUID(u'{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
 	name = "{}@{}".format(bn, principal_id)
-	payload["uuid"] = str(uuid.uuid5(namespace, name))
+	if sys.version_info[0] < 3:
+		payload["uuid"] = str(uuid.uuid5(namespace, name.encode('ascii')))
+	else:
+		payload["uuid"] = str(uuid.uuid5(namespace, name))
 
 	##################
 	## LOBBY & MODE ##
@@ -948,6 +956,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["his_team_estimate_league_point"] = results[i]["other_estimate_league_point"]
 	if mode == "gachi":
 		payload["estimate_gachi_power"] = results[i]["estimate_gachi_power"]
+	if mode == "regular":
+		payload["freshness"] = results[i]["win_meter"]
 	gender = results[i]["player_result"]["player"]["player_type"]["style"]
 	payload["gender"] = gender
 	species = results[i]["player_result"]["player"]["player_type"]["species"][:-1]
@@ -1002,7 +1012,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		if ver4:
 			synergy_mult = results[i]["uniform_bonus"]
 			if synergy_mult > 1:
-				points_gained *= synergy_mult
+				points_gained = round(points_gained * synergy_mult)
 
 		# SPECIAL CASE - KING/QUEEN MAX
 		if title_before == 4 and title_after == 4 and fest_exp_after == 0:
@@ -1121,8 +1131,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 						payload["image_result"] = bytes_result.getvalue()
 		if sendgears: # if most recent
 			url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
-			if stage == 9999: # fav_stage can't be Shifty Station
-				stages_ints = [k for k in translate_stages.keys() if k != 9999 and isinstance(k, int)]
+			if stage >= 100: # fav_stage can't be Shifty Station(s)
+				stages_ints = [k for k in translate_stages.keys() if isinstance(k, int) and k < 100]
 				fav_stage = random.choice(stages_ints)
 			else:
 				fav_stage = stage

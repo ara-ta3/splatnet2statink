@@ -70,15 +70,18 @@ def log_in(ver):
 		except KeyboardInterrupt:
 			print("\nBye!")
 			sys.exit(1)
-		except:
+		except AttributeError:
 			print("Malformed URL. Please try again, or press Ctrl+C to exit.")
 			print("URL:", end=' ')
+		except KeyError: # session_token not found
+			print("\nThe URL has expired. Please log out and back into your Nintendo Account and try again.")
+			sys.exit(1)
 
 def get_session_token(session_token_code, auth_code_verifier):
 	'''Helper function for log_in().'''
 
 	app_head = {
-		'User-Agent':      'OnlineLounge/1.5.0 NASDKAPI Android',
+		'User-Agent':      'OnlineLounge/1.5.2 NASDKAPI Android',
 		'Accept-Language': 'en-US',
 		'Accept':          'application/json',
 		'Content-Type':    'application/x-www-form-urlencoded',
@@ -116,7 +119,7 @@ def get_cookie(session_token, userLang, ver):
 		'Content-Length':  '437',
 		'Accept':          'application/json',
 		'Connection':      'Keep-Alive',
-		'User-Agent':      'OnlineLounge/1.5.0 NASDKAPI Android'
+		'User-Agent':      'OnlineLounge/1.5.2 NASDKAPI Android'
 	}
 
 	body = {
@@ -133,7 +136,7 @@ def get_cookie(session_token, userLang, ver):
 	# get user info
 	try:
 		app_head = {
-			'User-Agent':      'OnlineLounge/1.5.0 NASDKAPI Android',
+			'User-Agent':      'OnlineLounge/1.5.2 NASDKAPI Android',
 			'Accept-Language': userLang,
 			'Accept':          'application/json',
 			'Authorization':   'Bearer {}'.format(id_response["access_token"]),
@@ -157,9 +160,9 @@ def get_cookie(session_token, userLang, ver):
 	app_head = {
 		'Host':             'api-lp1.znc.srv.nintendo.net',
 		'Accept-Language':  userLang,
-		'User-Agent':       'com.nintendo.znca/1.5.0 (Android/7.1.2)',
+		'User-Agent':       'com.nintendo.znca/1.5.2 (Android/7.1.2)',
 		'Accept':           'application/json',
-		'X-ProductVersion': '1.5.0',
+		'X-ProductVersion': '1.5.2',
 		'Content-Type':     'application/json; charset=utf-8',
 		'Connection':       'Keep-Alive',
 		'Authorization':    'Bearer',
@@ -203,9 +206,9 @@ def get_cookie(session_token, userLang, ver):
 	try:
 		app_head = {
 			'Host':             'api-lp1.znc.srv.nintendo.net',
-			'User-Agent':       'com.nintendo.znca/1.5.0 (Android/7.1.2)',
+			'User-Agent':       'com.nintendo.znca/1.5.2 (Android/7.1.2)',
 			'Accept':           'application/json',
-			'X-ProductVersion': '1.5.0',
+			'X-ProductVersion': '1.5.2',
 			'Content-Type':     'application/json; charset=utf-8',
 			'Connection':       'Keep-Alive',
 			'Authorization':    'Bearer {}'.format(splatoon_token["result"]["webApiServerCredential"]["accessToken"]),
@@ -320,7 +323,7 @@ def call_flapg_api(id_token, guid, timestamp):
 			if api_response.text:
 				print(u"Error from the flapg API:\n{}".format(json.dumps(json.loads(api_response.text), indent=2, ensure_ascii=False)))
 			elif api_response.status_code == requests.codes.not_found:
-				print("Error from the flapg API: Error 404 (incorrect headers).")
+				print("Error from the flapg API: Error 404 (offline or incorrect headers).")
 			else:
 				print("Error from the flapg API: Error {}.".format(api_response.status_code))
 		except:
